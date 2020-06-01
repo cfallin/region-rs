@@ -6,10 +6,10 @@ region
 [![Documentation][docs-shield]][docs]
 [![Language (Rust)][rust-shield]][rust]
 
-A Rust library for dealing with memory regions.
+A cross-platform Rust API for manipulating memory regions
 
-It is implemented using platform specific APIs (e.g `VirtualQuery`,
-`VirtualLock`, `mprotect`, `mlock`).
+Its underlying implementation uses platform specific APIs (e.g
+`VirtualQuery`, `VirtualLock`, `mprotect`, `mlock`).
 
 ## Platforms
 
