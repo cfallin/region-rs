@@ -26,7 +26,7 @@ use crate::{os, round_to_page_boundaries, Region, Result};
 ///
 /// ```
 /// # fn main() -> region::Result<()> {
-/// # if cfg!(any(target_arch = "x86", target_arch = "x86_64")) {
+/// # if cfg!(all(any(target_arch = "x86", target_arch = "x86_64"), feature = "query")) {
 /// use region::Protection;
 /// let ret5 = [0xB8, 0x05, 0x00, 0x00, 0x00, 0xC3u8];
 ///
@@ -87,7 +87,7 @@ pub unsafe fn protect_with_handle<T>(
   let (address, size) = round_to_page_boundaries(address, size)?;
 
   // Preserve the current regions' flags
-  let mut regions = os::query(address, size)?.collect::<Result<Vec<_>>>()?;
+  let mut regions = query_for_protect_guard(address, size)?;
 
   // Apply the desired protection flags
   protect(address, size, protection)?;
@@ -106,6 +106,16 @@ pub unsafe fn protect_with_handle<T>(
   }
 
   Ok(ProtectGuard::new(regions))
+}
+
+#[cfg(feature = "query")]
+fn query_for_protect_guard<T>(address: *const T, size: usize) -> Result<Vec<Region>> {
+    os::query(address, size)?.collect::<Result<Vec<_>>>()
+}
+
+#[cfg(not(feature = "query"))]
+fn query_for_protect_guard<T>(_address: *const T, _size: usize) -> Result<Vec<Region>> {
+    Ok(vec![])
 }
 
 /// An RAII implementation of a scoped protection guard.
@@ -172,7 +182,7 @@ bitflags! {
   }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "query"))]
 mod tests {
   use super::*;
   use crate::tests::alloc_pages;

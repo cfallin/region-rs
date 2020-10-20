@@ -39,6 +39,7 @@
 //! - Cross-platform equivalents.
 //!
 //!   ```rust
+//!   # #[cfg(feature = "query")]
 //!   # unsafe fn example() -> region::Result<()> {
 //!   # use region::Protection;
 //!   let data = [0xDE, 0xAD, 0xBE, 0xEF];
@@ -70,6 +71,7 @@ extern crate bitflags;
 pub use error::{Error, Result};
 pub use lock::{lock, unlock, LockGuard};
 pub use protect::{protect, protect_with_handle, ProtectGuard, Protection};
+#[cfg(feature = "query")]
 pub use query::{query, query_range};
 
 mod error;
@@ -77,6 +79,7 @@ mod lock;
 mod os;
 pub mod page;
 mod protect;
+#[cfg(feature = "query")]
 mod query;
 
 /// A descriptor for a mapped memory region.
